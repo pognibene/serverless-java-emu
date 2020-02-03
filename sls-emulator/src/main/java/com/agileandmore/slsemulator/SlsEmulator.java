@@ -1,3 +1,21 @@
+/*
+    Copyright 2020 Pascal Ognibene (pognibene@gmail.com)
+
+    This file is part of The Serverless Emulator for Java (Aka SEJ).
+
+    SEJ is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    SEJ is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with SEJ.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package com.agileandmore.slsemulator;
 
 import com.agileandmore.slsruntime.ApiGatewayResponse;
@@ -109,8 +127,7 @@ public class SlsEmulator {
                 gatewayHeaders.put("CloudFront-Is-Tablet-Viewer", "false");
                 gatewayHeaders.put("CloudFront-Viewer-Country", "FR");
                 gatewayHeaders.put("Content-Type", "application/json; charset=UTF-8");
-                //FIXME je ne sais pas ce que contient ceci
-                //un nom de domaine? une IP?
+                //FIXME need to add this. Not mandatory, but useful in some corner cases
                 //gatewayHeaders.put("Host", req.getServerName());
                 //gatewayHeaders.put("Host", exchange.);
                 gatewayHeaders.put("User-Agent", "Apache-HttpClient/4.5.1 (Java/1.8.0_131)");
@@ -187,10 +204,10 @@ public class SlsEmulator {
 
     /**
      * Attempt to find a matching Java class/function for a given URI
-     * @param functions
-     * @param pathElements
-     * @param method
-     * @return
+     * @param functions list of functions found in the serverless yaml file
+     * @param pathElements list of elements found in the request path
+     * @param method the http method
+     * @return the api function if found, or null
      */
     private static ApiFunction findOneFunction(Map<String, ApiFunction> functions, List<String> pathElements, String method) {
 
@@ -222,9 +239,9 @@ public class SlsEmulator {
 
     /**
      * Split the raw (not decoded URL) and extract the path elements and query parameters elements
-     * @param requestUri
-     * @param pathElements
-     * @param queryElements
+     * @param requestUri the raw http URI
+     * @param pathElements will be filled by path elements
+     * @param queryElements will be filled with query parameters
      */
     private static void splitRawUrl(String requestUri, List<String> pathElements, Map<String, String> queryElements) {
         String[] parts = requestUri.split("\\?");
@@ -346,8 +363,8 @@ public class SlsEmulator {
 
     /**
      * Build the path parameters structure to pass to the lambda
-     * @param function
-     * @param pathElements
+     * @param function one function from the serverless yaml file
+     * @param pathElements path elements from the URI, made if fixed parts and parameters parts
      * @return
      */
     private static Map<String, String> buildPathParameters(ApiFunction function, List<String> pathElements) {
