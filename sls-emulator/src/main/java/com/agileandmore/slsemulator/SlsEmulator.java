@@ -68,7 +68,7 @@ public class SlsEmulator {
     }
 
     /**
-     * Handle an http request to the server
+     * Handle an http request for the server
      *
      * @param exchange the input and output messages
      * @throws IOException
@@ -187,8 +187,8 @@ public class SlsEmulator {
     /**
      * Build an http response for the case where no Java handler class was found for a path.
      * This is typically a configuration error in the serverless.yaml file
-     * @param exchange
-     * @param requestUri
+     * @param exchange the input/output request
+     * @param requestUri the request uri. Only for debug purpose.
      * @throws IOException
      */
     private static void buildNoHandlerResponse(HttpExchange exchange, String requestUri) throws IOException {
@@ -271,7 +271,8 @@ public class SlsEmulator {
     }
 
     /**
-     * This is the constructor to use in your tests
+     * This is the constructor to use in your tests.
+     * By default the emulator runs on port 7070. This can be overridden with the endpoint.url java property.
      */
     public SlsEmulator() {
         int runOnPort = 7070;
@@ -364,8 +365,8 @@ public class SlsEmulator {
     /**
      * Build the path parameters structure to pass to the lambda
      * @param function one function from the serverless yaml file
-     * @param pathElements path elements from the URI, made if fixed parts and parameters parts
-     * @return
+     * @param pathElements path elements from the URI, made of fixed parts and parameters parts
+     * @return a map suitable for inclusion in the lambda function parameters
      */
     private static Map<String, String> buildPathParameters(ApiFunction function, List<String> pathElements) {
 
