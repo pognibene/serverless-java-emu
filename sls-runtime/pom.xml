@@ -403,7 +403,7 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                         <version>${version.maven-gpg-plugin}</version>
-                        <!--                        <version>1.6</version>-->
+                        <configuration><keyname>B7833A141030F7A1B2D37D3B2050DCEFF3006120</keyname></configuration>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
