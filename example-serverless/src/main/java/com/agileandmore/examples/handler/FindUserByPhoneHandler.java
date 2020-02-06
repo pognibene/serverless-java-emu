@@ -9,8 +9,14 @@ public class FindUserByPhoneHandler implements RequestHandler<Map<String, Object
 
     @Override
     public ApiGatewayResponse handleRequest(Map<String, Object> i, Context cntxt) {
-        // TODO normally you'd create a User and encapsulate it in an ApiGatewayResponse, in the body field.
-        return new ApiGatewayResponse();
+        
+        User user = new User();
+        user.setFirstName("My First Name");
+        user.setLastName("My Last Name");
+        return ApiGatewayResponse.builder()
+                .setStatusCode(200)
+                .setObjectBody(user)
+                .build();
     }
 
 }

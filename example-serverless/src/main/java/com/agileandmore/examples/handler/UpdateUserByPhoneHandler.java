@@ -10,8 +10,9 @@ public class UpdateUserByPhoneHandler implements RequestHandler<Map<String, Obje
 
     @Override
     public ApiGatewayResponse handleRequest(Map<String, Object> i, Context cntxt) {
-        // TODO proper implementation here
-        return new ApiGatewayResponse();
+        return ApiGatewayResponse.builder()
+                .setStatusCode(200)
+                .build();
     }
     
 }
