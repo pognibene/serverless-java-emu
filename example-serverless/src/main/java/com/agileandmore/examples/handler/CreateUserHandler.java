@@ -10,11 +10,14 @@ public class CreateUserHandler implements RequestHandler<Map<String, Object>, Ap
 
     @Override
     public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
-        
+
         // note that even though the lambda returns an ApiGatewayResponse,
         // this type just is just a wrapper for the actual response and we are expected
         // to populate it.
-        // in this case, the 'real' response object returned by API Gateway would be a User
-        return new ApiGatewayResponse();
+        // note also that if your API is CORS enabled it should return some CORS headers
+        // with each call (setHeaders operation on the builder)
+        return ApiGatewayResponse.builder()
+                .setStatusCode(201)
+                .build();
     }
 }
