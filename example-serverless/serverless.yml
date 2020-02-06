@@ -1,0 +1,41 @@
+service: user-api
+
+provider:
+  name: aws
+  runtime: java8
+  stage: ${opt:stage, 'dev'}
+  region: ap-southeast-1
+    
+package:
+  artifact: target/user-api-1.0-SNAPSHOT.jar
+
+functions:
+  createUser:
+    handler: com.agileandmore.examples.handler.CreateUserHandler
+    events:
+      - http:
+          path: api/v1/users
+          method: post
+          cors: true
+  deleteUser:
+    handler: com.agileandmore.examples.handler.DeleteUserHandler
+    events:
+      - http:
+          path: api/v1/users/{mobile}
+          method: delete
+          cors: true
+  findUserByPhone:
+    handler: com.agileandmore.examples.handler.FindUserByPhoneHandler
+    events:
+      - http:
+          path: api/v1/users/{mobile}
+          method: get
+          cors: true
+  updateUserByPhone:
+    handler: com.agileandmore.examples.handler.UpdateUserByPhoneHandler
+    events:
+      - http:
+          path: api/v1/users/{mobile}
+          method: put
+          cors: true
+
