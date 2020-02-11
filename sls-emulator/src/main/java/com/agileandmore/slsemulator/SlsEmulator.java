@@ -50,7 +50,9 @@ public class SlsEmulator {
      * Stop the server immediately
      */
     public void stop() {
-        server.stop(0);
+        if (server != null) {
+            server.stop(0);
+        }
     }
 
     /**
