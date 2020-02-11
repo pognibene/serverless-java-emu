@@ -9,7 +9,7 @@ a matter of including 1 dependency in your tests:
 <dependency>
     <groupId>com.agileandmore</groupId>
     <artifactId>com.agileandmore.slsemulator</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
     <scope>test</scope>
 </dependency>
 ``` 
