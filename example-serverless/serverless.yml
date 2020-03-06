@@ -5,6 +5,10 @@ provider:
   runtime: java8
   stage: ${opt:stage, 'dev'}
   region: ap-southeast-1
+
+custom:
+  customDomain:
+    basePath: "users"
     
 package:
   artifact: target/user-api-1.0-SNAPSHOT.jar

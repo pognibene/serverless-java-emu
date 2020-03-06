@@ -23,7 +23,7 @@
     <groupId>com.agileandmore</groupId>
     <artifactId>com.agileandmore.slsemulator</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.4-SNAPSHOT</version>
 
     <description>A library emulating AWS API Gateway, AWS Lambda, and part of the serverless framework, to test locally
         your java lambdas.

@@ -64,7 +64,7 @@ public class UserTest {
 
         // call the API. This is going through the serverless emulation if run locally.
         given().contentType("application/json").body(user)
-                .when().post("/api/v1/users")
+                .when().post("/users/api/v1/users")
                 .then().statusCode(201);
 
         // in a real test you would have assertions here
@@ -77,7 +77,7 @@ public class UserTest {
         User user = given()
                 .pathParam("phone", "0901020102")
                 .contentType("application/json")
-                .when().get("/api/v1/users/{phone}")
+                .when().get("/users/api/v1/users/{phone}")
                 .then()
                 .statusCode(200).extract().response().as(User.class);
 
@@ -93,7 +93,7 @@ public class UserTest {
         given()
                 .pathParam("phone", "0901020102")
                 .contentType("application/json")
-                .when().delete("/api/v1/users/{phone}")
+                .when().delete("/users/api/v1/users/{phone}")
                 .then()
                 .statusCode(204);
 
@@ -112,7 +112,7 @@ public class UserTest {
         // call the API. This is going through the serverless emulation if run locally.
         given().contentType("application/json").body(user)
                 .pathParam("phone", "0901020102")
-                .when().put("/api/v1/users/{phone}")
+                .when().put("/users/api/v1/users/{phone}")
                 .then().statusCode(200);
 
         // in a real test you would have assertions here

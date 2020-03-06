@@ -320,6 +320,9 @@ public class SlsEmulator {
             InputStream ios = new FileInputStream(new File(fileName));
             Map<String, Object> result = (Map<String, Object>) yaml.load(ios);
             Map<String, Object> functions = (Map<String, Object>) result.getOrDefault("functions", new ArrayList<Map<String, Object>>());
+            Map<String, Object> custom = (Map<String, Object>) result.getOrDefault("custom", new HashMap<>());
+            Map<String, Object> customDomain = (Map<String, Object>) custom.getOrDefault("customDomain", new HashMap<>());
+            String basePath = (String) customDomain.getOrDefault("basePath", "");;
 
             for (String s : functions.keySet()) {
                 Map<String, Object> attributes = (Map<String, Object>) functions.getOrDefault(s, new ArrayList<Map<String, Object>>());
@@ -342,6 +345,9 @@ public class SlsEmulator {
                     ApiFunction oneFunction = new ApiFunction();
                     oneFunction.setName(s);
                     oneFunction.setHandler(handler);
+                    if (!basePath.isEmpty()) {
+                        path = basePath + "/" + path;
+                    }
                     oneFunction.setPath(path);
                     oneFunction.setMethod(method);
 
