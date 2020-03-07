@@ -1,0 +1,8 @@
+This example makes use of the serverless domain manager plugin,
+used to deploy services under a fixed domain name.
+The emulator reads the plugin custom entries in the serverless.yml file
+and makes sure that the URL are prefixed properly.
+This is useful if you run your services locally (using a fake test as a runner,
+please also find an example in this project...) and you don't want to modify
+your client application to remove the prefix when running locally. Only the
+domain name will have to change (ie replaced by http://localhost:port)

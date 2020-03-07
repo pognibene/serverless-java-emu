@@ -45,6 +45,7 @@ public class SlsEmulator {
 
     private HttpServer server = null;
     private static Map<String, ApiFunction> storedFunctions = new HashMap<>();
+    private String basePath = "";
 
     /**
      * Stop the server immediately
@@ -56,7 +57,7 @@ public class SlsEmulator {
     }
 
     /**
-     * build a CORS answers in case a web browser is calling the api
+     * build a CORS answer in case a web browser is calling the api
      */
     private static void buildCorsAnswer(HttpExchange exchange) throws IOException {
         Headers headers = exchange.getResponseHeaders();
@@ -129,9 +130,9 @@ public class SlsEmulator {
                 gatewayHeaders.put("CloudFront-Is-Tablet-Viewer", "false");
                 gatewayHeaders.put("CloudFront-Viewer-Country", "FR");
                 gatewayHeaders.put("Content-Type", "application/json; charset=UTF-8");
-                //FIXME need to add this. Not mandatory, but useful in some corner cases
-                //gatewayHeaders.put("Host", req.getServerName());
-                //gatewayHeaders.put("Host", exchange.);
+                // FIXME need to add this. Not mandatory, but useful in some corner cases
+                // gatewayHeaders.put("Host", req.getServerName());
+                // gatewayHeaders.put("Host", exchange.);
                 gatewayHeaders.put("User-Agent", "Apache-HttpClient/4.5.1 (Java/1.8.0_131)");
                 gatewayHeaders.put("Via", "1.1 16291083b92e5aa4f2f272f1da69c5e4.cloudfront.net (CloudFront)");
                 gatewayHeaders.put("X-Amz-Cf-Id", "TIHPZoMaJ8s2UYvCheicpxS8VUDKl46i9aGIDOloj6OMLWlstQ8sUw==");
@@ -154,7 +155,8 @@ public class SlsEmulator {
                 Object myInstance = c.newInstance();
 
                 Method toBeInvoked = c.getMethod("handleRequest", Map.class, Context.class);
-                ApiGatewayResponse handlerResponse = (ApiGatewayResponse) toBeInvoked.invoke(myInstance, callParameters, null);
+                ApiGatewayResponse handlerResponse = (ApiGatewayResponse) toBeInvoked.invoke(myInstance, callParameters,
+                        null);
 
                 // build the response
                 Headers headers = exchange.getResponseHeaders();
@@ -170,7 +172,8 @@ public class SlsEmulator {
                 handlerResponse.getHeaders().forEach(headers::add);
 
                 if (handlerResponse.getBody() != null) {
-                    exchange.sendResponseHeaders(handlerResponse.getStatusCode(), handlerResponse.getBody().getBytes().length);
+                    exchange.sendResponseHeaders(handlerResponse.getStatusCode(),
+                            handlerResponse.getBody().getBytes().length);
                     exchange.getResponseBody().write(handlerResponse.getBody().getBytes());
                 } else {
                     exchange.sendResponseHeaders(handlerResponse.getStatusCode(), 0);
@@ -178,20 +181,18 @@ public class SlsEmulator {
                 exchange.getRequestBody().close();
                 exchange.getResponseBody().close();
 
-            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException
-                    | IllegalAccessException | IllegalArgumentException
-                    | InvocationTargetException | InstantiationException ex) {
+            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException
+                    | IllegalArgumentException | InvocationTargetException | InstantiationException ex) {
                 java.util.logging.Logger.getLogger(SlsEmulator.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
 
     /**
-     * Build an http response for the case where no Java handler class was found
-     * for a path. This is typically a configuration error in the
-     * serverless.yaml file
+     * Build an http response for the case where no Java handler class was found for
+     * a path. This is typically a configuration error in the serverless.yaml file
      *
-     * @param exchange the input/output request
+     * @param exchange   the input/output request
      * @param requestUri the request uri. Only for debug purpose.
      * @throws IOException
      */
@@ -209,12 +210,13 @@ public class SlsEmulator {
     /**
      * Attempt to find a matching Java class/function for a given URI
      *
-     * @param functions list of functions found in the serverless yaml file
+     * @param functions    list of functions found in the serverless yaml file
      * @param pathElements list of elements found in the request path
-     * @param method the http method
+     * @param method       the http method
      * @return the api function if found, or null
      */
-    private static ApiFunction findOneFunction(Map<String, ApiFunction> functions, List<String> pathElements, String method) {
+    private static ApiFunction findOneFunction(Map<String, ApiFunction> functions, List<String> pathElements,
+            String method) {
 
         for (Map.Entry<String, ApiFunction> entry : functions.entrySet()) {
             ApiFunction oneFunction = entry.getValue();
@@ -246,8 +248,8 @@ public class SlsEmulator {
      * Split the raw (not decoded URL) and extract the path elements and query
      * parameters elements
      *
-     * @param requestUri the raw http URI
-     * @param pathElements will be filled by path elements
+     * @param requestUri    the raw http URI
+     * @param pathElements  will be filled by path elements
      * @param queryElements will be filled with query parameters
      */
     private static void splitRawUrl(String requestUri, List<String> pathElements, Map<String, String> queryElements) {
@@ -277,9 +279,8 @@ public class SlsEmulator {
     }
 
     /**
-     * This is the constructor to use in your tests. By default the emulator
-     * runs on port 7070. This can be overridden with the endpoint.url java
-     * property.
+     * This is the constructor to use in your tests. By default the emulator runs on
+     * port 7070. This can be overridden with the endpoint.url java property.
      */
     public SlsEmulator() {
         int runOnPort = 7070;
@@ -296,7 +297,8 @@ public class SlsEmulator {
             }
         }
 
-        Logger.getLogger(SlsEmulator.class.getName()).log(Level.INFO, "Running API Gateway emulation on port : " + runOnPort);
+        Logger.getLogger(SlsEmulator.class.getName()).log(Level.INFO,
+                "Running API Gateway emulation on port : " + runOnPort);
 
         readServerlessFile("serverless.yml");
 
@@ -311,27 +313,46 @@ public class SlsEmulator {
     }
 
     /**
-     * Read the serverless yaml file and find handlers in it. Made with
-     * snakeyaml as much faster than jackson.
+     * Read the serverless yaml file and find handlers in it. Made with snakeyaml as
+     * much faster than jackson.
      */
     private void readServerlessFile(String fileName) {
         Yaml yaml = new Yaml();
         try {
             InputStream ios = new FileInputStream(new File(fileName));
             Map<String, Object> result = (Map<String, Object>) yaml.load(ios);
-            Map<String, Object> functions = (Map<String, Object>) result.getOrDefault("functions", new ArrayList<Map<String, Object>>());
+
+            List<String> plugins = (List<String>) result.getOrDefault("plugins", new ArrayList<String>());
+
+            if (plugins.size() > 0) {
+                for (String s : plugins) {
+                    if (s.equals("serverless-domain-manager")) {
+                        Map<String, Object> custom = (Map<String, Object>) result.getOrDefault("custom",
+                                new HashMap<>());
+                        Map<String, Object> customDomain = (Map<String, Object>) custom.getOrDefault("customDomain",
+                                new HashMap<>());
+                        basePath = (String) customDomain.getOrDefault("basePath", "");
+                    }
+                }
+            }
+
+            Map<String, Object> functions = (Map<String, Object>) result.getOrDefault("functions",
+                    new ArrayList<Map<String, Object>>());
 
             for (String s : functions.keySet()) {
-                Map<String, Object> attributes = (Map<String, Object>) functions.getOrDefault(s, new ArrayList<Map<String, Object>>());
+                Map<String, Object> attributes = (Map<String, Object>) functions.getOrDefault(s,
+                        new ArrayList<Map<String, Object>>());
                 String handler = (String) attributes.getOrDefault("handler", null);
                 String method = null;
                 String path = null;
 
-                List<Map<String, Object>> events = (List<Map<String, Object>>) attributes.getOrDefault("events", new ArrayList<Map<String, Object>>());
+                List<Map<String, Object>> events = (List<Map<String, Object>>) attributes.getOrDefault("events",
+                        new ArrayList<Map<String, Object>>());
 
                 if (events.size() > 0) {
                     for (Map<String, Object> o : events) {
-                        Map<String, Object> http = (Map<String, Object>) o.getOrDefault("http", new ArrayList<Map<String, Object>>());
+                        Map<String, Object> http = (Map<String, Object>) o.getOrDefault("http",
+                                new ArrayList<Map<String, Object>>());
                         if (http != null) {
                             path = (String) http.getOrDefault("path", null);
                             method = (String) http.getOrDefault("method", null);
@@ -342,6 +363,9 @@ public class SlsEmulator {
                     ApiFunction oneFunction = new ApiFunction();
                     oneFunction.setName(s);
                     oneFunction.setHandler(handler);
+                    if (!basePath.isEmpty()) {
+                        path = basePath + "/" + path;
+                    }
                     oneFunction.setPath(path);
                     oneFunction.setMethod(method);
 
@@ -371,9 +395,9 @@ public class SlsEmulator {
     /**
      * Build the path parameters structure to pass to the lambda
      *
-     * @param function one function from the serverless yaml file
+     * @param function     one function from the serverless yaml file
      * @param pathElements path elements from the URI, made of fixed parts and
-     * parameters parts
+     *                     parameters parts
      * @return a map suitable for inclusion in the lambda function parameters
      */
     private static Map<String, String> buildPathParameters(ApiFunction function, List<String> pathElements) {
@@ -386,5 +410,9 @@ public class SlsEmulator {
             }
         }
         return result;
+    }
+
+    public String getBasePath(){
+        return basePath;
     }
 }

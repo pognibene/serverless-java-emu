@@ -19,9 +19,8 @@ public class UserTest {
     static SlsEmulator emulator = null;
 
     /**
-     * Typically you would have a base test class with the logic to start and
-     * stop the emulation, and you would inherit this class in your test
-     * classes.
+     * Typically you would have a base test class with the logic to start and stop
+     * the emulation, and you would inherit this class in your test classes.
      */
     @BeforeClass
     public static void setUpClass() {
@@ -67,9 +66,7 @@ public class UserTest {
         user.setLastName("lastName");
 
         // call the API. This is going through the serverless emulation if run locally.
-        given().contentType("application/json").body(user)
-                .when().post("/api/v1/users")
-                .then().statusCode(201);
+        given().contentType("application/json").body(user).when().post("/api/v1/users").then().statusCode(201);
 
         // in a real test you would have assertions here
         // depends if the operation returns a body or not
@@ -78,12 +75,8 @@ public class UserTest {
     @Test
     public void should_find_user() {
 
-        User user = given()
-                .pathParam("phone", "0901020102")
-                .contentType("application/json")
-                .when().get("/api/v1/users/{phone}")
-                .then()
-                .statusCode(200).extract().response().as(User.class);
+        User user = given().pathParam("phone", "0901020102").contentType("application/json").when()
+                .get("/api/v1/users/{phone}").then().statusCode(200).extract().response().as(User.class);
 
         // in a real test you would have assertions here
         // depends if the operation returns a body or not
@@ -94,12 +87,8 @@ public class UserTest {
     @Test
     public void should_delete_user() {
 
-        given()
-                .pathParam("phone", "0901020102")
-                .contentType("application/json")
-                .when().delete("/api/v1/users/{phone}")
-                .then()
-                .statusCode(204);
+        given().pathParam("phone", "0901020102").contentType("application/json").when().delete("/api/v1/users/{phone}")
+                .then().statusCode(204);
 
         // in a real test you would have assertions here
         // depends if the operation returns a body or not
@@ -114,10 +103,8 @@ public class UserTest {
         user.setLastName("lastName");
 
         // call the API. This is going through the serverless emulation if run locally.
-        given().contentType("application/json").body(user)
-                .pathParam("phone", "0901020102")
-                .when().put("/api/v1/users/{phone}")
-                .then().statusCode(200);
+        given().contentType("application/json").body(user).pathParam("phone", "0901020102").when()
+                .put("/api/v1/users/{phone}").then().statusCode(200);
 
         // in a real test you would have assertions here
         // depends if the operation returns a body or not
