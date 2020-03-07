@@ -12,7 +12,8 @@ public class DynamoDbManager {
      *
      * @return
      */
-    public static DynamoDB getMapper() {
+    public static
+    DynamoDB getMapper() {
         String dynamoUrl = System.getProperty("dynamodb.url");
         String dynamoRegion = System.getProperty("dynamodb.region");
 
