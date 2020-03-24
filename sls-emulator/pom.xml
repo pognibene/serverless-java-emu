@@ -23,7 +23,7 @@
     <groupId>com.agileandmore</groupId>
     <artifactId>com.agileandmore.slsemulator</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
-    <version>1.4</version>
+    <version>1.5-SNAPSHOT</version>
 
     <description>A library emulating AWS API Gateway, AWS Lambda, and part of the serverless framework, to test locally
         your java lambdas.
@@ -57,7 +57,7 @@
         <connection>scm:git:git@github.com:pognibene/serverless-java-emu.git</connection>
         <developerConnection>scm:git:git@github.com:pognibene/serverless-java-emu.git</developerConnection>
         <url>https://github.com/pognibene/serverless-java-emu</url>
-        <tag>com.agileandmore.slsemulator-1.4</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
