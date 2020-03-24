@@ -121,7 +121,7 @@ public class SlsEmulator {
                 // API gateway headers emulation.
                 Map<String, String> gatewayHeaders = new HashMap<>();
 
-                gatewayHeaders.put("Accept", "*/*");
+                //gatewayHeaders.put("Accept", "*/*"); this should not be hardcoded
                 gatewayHeaders.put("Accept-Encoding", "gzip,deflate");
                 gatewayHeaders.put("CloudFront-Forwarded-Proto", "https");
                 gatewayHeaders.put("CloudFront-Is-Desktop-Viewer", "true");
@@ -129,10 +129,9 @@ public class SlsEmulator {
                 gatewayHeaders.put("CloudFront-Is-SmartTV-Viewer", "false");
                 gatewayHeaders.put("CloudFront-Is-Tablet-Viewer", "false");
                 gatewayHeaders.put("CloudFront-Viewer-Country", "FR");
-                gatewayHeaders.put("Content-Type", "application/json; charset=UTF-8");
+                //gatewayHeaders.put("Content-Type", "application/json; charset=UTF-8"); this should not be hardcoded
                 // FIXME need to add this. Not mandatory, but useful in some corner cases
                 // gatewayHeaders.put("Host", req.getServerName());
-                // gatewayHeaders.put("Host", exchange.);
                 gatewayHeaders.put("User-Agent", "Apache-HttpClient/4.5.1 (Java/1.8.0_131)");
                 gatewayHeaders.put("Via", "1.1 16291083b92e5aa4f2f272f1da69c5e4.cloudfront.net (CloudFront)");
                 gatewayHeaders.put("X-Amz-Cf-Id", "TIHPZoMaJ8s2UYvCheicpxS8VUDKl46i9aGIDOloj6OMLWlstQ8sUw==");
