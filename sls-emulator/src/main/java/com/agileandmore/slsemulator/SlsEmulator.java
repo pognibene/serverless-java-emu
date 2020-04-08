@@ -336,9 +336,13 @@ public class SlsEmulator {
             }
 
             Map<String, Object> functions = (Map<String, Object>) result.getOrDefault("functions",
-                    new ArrayList<Map<String, Object>>());
+                    new HashMap<String, Object>());
+            
+            // for some reason, the default value should be an empty map but it's null instead
+            if(functions == null || functions.isEmpty()) return;
 
             for (String s : functions.keySet()) {
+            
                 Map<String, Object> attributes = (Map<String, Object>) functions.getOrDefault(s,
                         new ArrayList<Map<String, Object>>());
                 String handler = (String) attributes.getOrDefault("handler", null);
