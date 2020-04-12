@@ -57,7 +57,7 @@ public class SlsEmulator {
     }
 
     /**
-     * build a CORS answer in case a web browser is calling the api
+     * build a CORS answer in case a web browser is calling the API
      */
     private static void buildCorsAnswer(HttpExchange exchange) throws IOException {
         Headers headers = exchange.getResponseHeaders();
@@ -71,7 +71,7 @@ public class SlsEmulator {
     }
 
     /**
-     * Handle an http request for the server
+     * Handle an HTTP request for the server
      *
      * @param exchange the input and output messages
      * @throws IOException
@@ -80,6 +80,18 @@ public class SlsEmulator {
 
         String method = exchange.getRequestMethod().toLowerCase();
         URI uri = exchange.getRequestURI();
+        InetSocketAddress remoteAddress = exchange.getRemoteAddress();
+        String sourceIp = remoteAddress.getAddress().getHostAddress();
+
+        // http headers are not case sensitive, so to extract the user agent I need to search all of them
+        String userAgent = "Unknown";
+        for (String s : exchange.getRequestHeaders().keySet()) {
+            List<String> values = exchange.getRequestHeaders().get(s);
+            String lowerKey = s.toLowerCase();
+            if (lowerKey.equals("user-agent")) {
+                userAgent = values.get(values.size() - 1);
+            }
+        }
 
         String requestUri = uri.toString();
         if (requestUri.startsWith("/")) {
@@ -100,10 +112,18 @@ public class SlsEmulator {
 
         if (foundFunction == null) {
             buildNoHandlerResponse(exchange, requestUri);
-            return;
         } else {
             try {
                 Map<String, Object> callParameters = new HashMap<>();
+
+                // I need the request context if I want to pass the caller IP address and user agent
+                Map<String, Object> requestContext = new HashMap<>();
+                callParameters.put("requestContext", requestContext);
+
+                Map<String, Object> identity = new HashMap<>();
+                requestContext.put("identity", identity);
+                identity.put("sourceIp", sourceIp);
+                identity.put("userAgent", userAgent);
 
                 if (body != null) {
                     callParameters.put("body", body);
@@ -188,11 +208,12 @@ public class SlsEmulator {
     }
 
     /**
-     * Build an http response for the case where no Java handler class was found for
-     * a path. This is typically a configuration error in the serverless.yaml file
+     * Build an HTTP response for the case where no Java handler class was found
+     * for a path. This is typically a configuration error in the
+     * serverless.yaml file
      *
-     * @param exchange   the input/output request
-     * @param requestUri the request uri. Only for debug purpose.
+     * @param exchange the input/output request
+     * @param requestUri the request URI. Only for debug purpose.
      * @throws IOException
      */
     private static void buildNoHandlerResponse(HttpExchange exchange, String requestUri) throws IOException {
@@ -209,9 +230,9 @@ public class SlsEmulator {
     /**
      * Attempt to find a matching Java class/function for a given URI
      *
-     * @param functions    list of functions found in the serverless yaml file
+     * @param functions list of functions found in the serverless yaml file
      * @param pathElements list of elements found in the request path
-     * @param method       the http method
+     * @param method the http method
      * @return the api function if found, or null
      */
     private static ApiFunction findOneFunction(Map<String, ApiFunction> functions, List<String> pathElements,
@@ -247,8 +268,8 @@ public class SlsEmulator {
      * Split the raw (not decoded URL) and extract the path elements and query
      * parameters elements
      *
-     * @param requestUri    the raw http URI
-     * @param pathElements  will be filled by path elements
+     * @param requestUri the raw http URI
+     * @param pathElements will be filled by path elements
      * @param queryElements will be filled with query parameters
      */
     private static void splitRawUrl(String requestUri, List<String> pathElements, Map<String, String> queryElements) {
@@ -278,8 +299,9 @@ public class SlsEmulator {
     }
 
     /**
-     * This is the constructor to use in your tests. By default the emulator runs on
-     * port 7070. This can be overridden with the endpoint.url java property.
+     * This is the constructor to use in your tests. By default the emulator
+     * runs on port 7070. This can be overridden with the endpoint.url java
+     * property.
      */
     public SlsEmulator() {
         int runOnPort = 7070;
@@ -312,8 +334,8 @@ public class SlsEmulator {
     }
 
     /**
-     * Read the serverless yaml file and find handlers in it. Made with snakeyaml as
-     * much faster than jackson.
+     * Read the serverless yaml file and find handlers in it. Made with
+     * snakeyaml as much faster than jackson.
      */
     private void readServerlessFile(String fileName) {
         Yaml yaml = new Yaml();
@@ -337,12 +359,14 @@ public class SlsEmulator {
 
             Map<String, Object> functions = (Map<String, Object>) result.getOrDefault("functions",
                     new HashMap<String, Object>());
-            
+
             // for some reason, the default value should be an empty map but it's null instead
-            if(functions == null || functions.isEmpty()) return;
+            if (functions == null || functions.isEmpty()) {
+                return;
+            }
 
             for (String s : functions.keySet()) {
-            
+
                 Map<String, Object> attributes = (Map<String, Object>) functions.getOrDefault(s,
                         new ArrayList<Map<String, Object>>());
                 String handler = (String) attributes.getOrDefault("handler", null);
@@ -398,9 +422,9 @@ public class SlsEmulator {
     /**
      * Build the path parameters structure to pass to the lambda
      *
-     * @param function     one function from the serverless yaml file
+     * @param function one function from the serverless yaml file
      * @param pathElements path elements from the URI, made of fixed parts and
-     *                     parameters parts
+     * parameters parts
      * @return a map suitable for inclusion in the lambda function parameters
      */
     private static Map<String, String> buildPathParameters(ApiFunction function, List<String> pathElements) {
@@ -415,7 +439,7 @@ public class SlsEmulator {
         return result;
     }
 
-    public String getBasePath(){
+    public String getBasePath() {
         return basePath;
     }
 }
