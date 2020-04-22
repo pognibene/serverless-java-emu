@@ -188,7 +188,10 @@ public class SlsEmulator {
                 headers.add("x-cache", "Error from cloudfront");
                 headers.add("via", "1.1 54073dd9095b9ef12d7cdaefb0bcc12c.cloudfront.net (CloudFront)");
                 headers.add("x-amz-cf-id", "FA8PcHW-HpB3mziDqB49c4lzX8xrG9b6eVZfAWPAVAdY-5KhDzUC1g==");
-                handlerResponse.getHeaders().forEach(headers::add);
+                
+                // override headers with the one provided by the handler
+                // use set instead of add
+                handlerResponse.getHeaders().forEach(headers::set);
 
                 if (handlerResponse.getBody() != null) {
                     exchange.sendResponseHeaders(handlerResponse.getStatusCode(),
