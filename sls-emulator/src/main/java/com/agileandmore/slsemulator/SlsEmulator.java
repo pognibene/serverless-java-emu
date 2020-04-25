@@ -125,8 +125,10 @@ public class SlsEmulator {
                 identity.put("sourceIp", sourceIp);
                 identity.put("userAgent", userAgent);
 
-                if (body != null) {
+                if (body != null && body.trim().length() > 0) {
                     callParameters.put("body", body);
+                } else {
+                    callParameters.put("body", null);
                 }
 
                 callParameters.put("pathParameters", buildPathParameters(foundFunction, pathElements));
