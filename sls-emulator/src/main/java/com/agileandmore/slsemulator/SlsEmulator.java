@@ -94,6 +94,9 @@ public class SlsEmulator {
         }
 
         String requestUri = uri.toString();
+
+        System.out.println("request uri as received [" + requestUri + "]");
+
         if (requestUri.startsWith("/")) {
             requestUri = requestUri.substring(1);
         }
@@ -190,7 +193,7 @@ public class SlsEmulator {
                 headers.add("x-cache", "Error from cloudfront");
                 headers.add("via", "1.1 54073dd9095b9ef12d7cdaefb0bcc12c.cloudfront.net (CloudFront)");
                 headers.add("x-amz-cf-id", "FA8PcHW-HpB3mziDqB49c4lzX8xrG9b6eVZfAWPAVAdY-5KhDzUC1g==");
-                
+
                 // override headers with the one provided by the handler
                 // use set instead of add
                 handlerResponse.getHeaders().forEach(headers::set);
@@ -281,11 +284,8 @@ public class SlsEmulator {
         String[] parts = requestUri.split("\\?");
         String[] pathParts = parts[0].split("/");
         for (String s : pathParts) {
-            try {
-                pathElements.add(URLDecoder.decode(s, "UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                Logger.getLogger(SlsEmulator.class.getName()).log(Level.SEVERE, null, e);
-            }
+            // API gateway actually does not decode the path elements
+            pathElements.add(s);
         }
 
         if (parts.length == 2) {
