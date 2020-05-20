@@ -95,8 +95,6 @@ public class SlsEmulator {
 
         String requestUri = uri.toString();
 
-        System.out.println("request uri as received [" + requestUri + "]");
-
         if (requestUri.startsWith("/")) {
             requestUri = requestUri.substring(1);
         }
@@ -383,8 +381,7 @@ public class SlsEmulator {
 
                 if (events.size() > 0) {
                     for (Map<String, Object> o : events) {
-                        Map<String, Object> http = (Map<String, Object>) o.getOrDefault("http",
-                                new ArrayList<Map<String, Object>>());
+                        Map<String, Object> http = (Map<String, Object>) o.get("http");
                         if (http != null) {
                             path = (String) http.getOrDefault("path", null);
                             method = (String) http.getOrDefault("method", null);
