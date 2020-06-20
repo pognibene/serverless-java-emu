@@ -144,7 +144,6 @@ public class SlsEmulator {
                 // API gateway headers emulation.
                 Map<String, String> gatewayHeaders = new HashMap<>();
 
-                //gatewayHeaders.put("Accept", "*/*"); this should not be hardcoded
                 gatewayHeaders.put("Accept-Encoding", "gzip,deflate");
                 gatewayHeaders.put("CloudFront-Forwarded-Proto", "https");
                 gatewayHeaders.put("CloudFront-Is-Desktop-Viewer", "true");
@@ -174,7 +173,7 @@ public class SlsEmulator {
 
                 // now invoke the operation
                 Class c = Class.forName(foundFunction.getHandler());
-                Object myInstance = c.newInstance();
+                Object myInstance = foundFunction.getHandlerInstance();
 
                 Method toBeInvoked = c.getMethod("handleRequest", Map.class, Context.class);
                 ApiGatewayResponse handlerResponse = (ApiGatewayResponse) toBeInvoked.invoke(myInstance, callParameters,
@@ -206,9 +205,12 @@ public class SlsEmulator {
                 exchange.getRequestBody().close();
                 exchange.getResponseBody().close();
 
-            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException
-                    | IllegalArgumentException | InvocationTargetException | InstantiationException ex) {
-                java.util.logging.Logger.getLogger(SlsEmulator.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException ex) {
+                Logger.getLogger(SlsEmulator.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IllegalArgumentException ex) {
+                Logger.getLogger(SlsEmulator.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InvocationTargetException ex) {
+                Logger.getLogger(SlsEmulator.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -392,6 +394,27 @@ public class SlsEmulator {
                     ApiFunction oneFunction = new ApiFunction();
                     oneFunction.setName(s);
                     oneFunction.setHandler(handler);
+
+                    // create one instance of the handler and store it
+                    Class Klass = null;
+                    try {
+                        Klass = Class.forName(handler);
+                    } catch (ClassNotFoundException ex) {
+                        Logger.getLogger(SlsEmulator.class.getName()).log(Level.SEVERE, null, ex);
+                        System.exit(1);
+                    }
+                    Object myInstance = null;
+                    try {
+                        myInstance = Klass.newInstance();
+                        oneFunction.setHandlerInstance(myInstance);
+                    } catch (InstantiationException ex) {
+                        Logger.getLogger(SlsEmulator.class.getName()).log(Level.SEVERE, null, ex);
+                        System.exit(1);
+                    } catch (IllegalAccessException ex) {
+                        Logger.getLogger(SlsEmulator.class.getName()).log(Level.SEVERE, null, ex);
+                        System.exit(1);
+                    }
+
                     if (!basePath.isEmpty()) {
                         path = basePath + "/" + path;
                     }
@@ -414,6 +437,7 @@ public class SlsEmulator {
                     }
                     oneFunction.setItems(listItems);
                     storedFunctions.put(s, oneFunction);
+                
                 }
             }
         } catch (FileNotFoundException ex) {
@@ -443,5 +467,9 @@ public class SlsEmulator {
 
     public String getBasePath() {
         return basePath;
+    }
+
+    public Object getHandlerInstance(String name) {  
+        return storedFunctions.get(name).getHandlerInstance();
     }
 }

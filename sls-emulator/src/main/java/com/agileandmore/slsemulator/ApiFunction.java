@@ -30,6 +30,7 @@ public class ApiFunction {
     private String handler;
     private String path;
     private String method;
+    private Object handlerInstance;
     private List<UrlItem> items = new ArrayList<>();
 
     public String getName() {
@@ -72,6 +73,14 @@ public class ApiFunction {
         this.items = items;
     }
 
+    public Object getHandlerInstance() {
+        return handlerInstance;
+    }
+
+    public void setHandlerInstance(Object handlerInstance) {
+        this.handlerInstance = handlerInstance;
+    }
+    
     @Override
     public String toString() {
         return "ApiFunction{" + "name=" + name + ", handler=" + handler + ", path=" + path + ", method=" + method + '}';
