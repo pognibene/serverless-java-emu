@@ -310,6 +310,12 @@ public class SlsEmulator {
      */
     public SlsEmulator() {
         int runOnPort = 7070;
+        
+        // always read the serverless file and create the handlers,
+        // even if the emulator is not listening
+        // otherwise tests running in deployed mode will crash
+        // when trying to get a reference to a handler
+        readServerlessFile("serverless.yml");
 
         String endpointUrl = System.getProperty("endpoint.url");
         if (endpointUrl != null && endpointUrl.trim().length() != 0) {
@@ -325,8 +331,6 @@ public class SlsEmulator {
 
         Logger.getLogger(SlsEmulator.class.getName()).log(Level.INFO,
                 "Running API Gateway emulation on port : " + runOnPort);
-
-        readServerlessFile("serverless.yml");
 
         try {
             server = HttpServer.create(new InetSocketAddress(runOnPort), 0);
